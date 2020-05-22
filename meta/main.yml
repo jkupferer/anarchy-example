@@ -1,0 +1,10 @@
+galaxy_info:
+  author: Johnathan Kupferer
+  description: Anarchy Example Role
+  company: Red Hat
+  issue_tracker_url: http://github.com/jkupferer/anarchy_example/issues
+  license: GPL-3.0-only
+  min_ansible_version: 2.9
+  galaxy_tags: []
+
+dependencies: []

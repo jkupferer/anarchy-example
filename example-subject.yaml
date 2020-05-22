@@ -1,0 +1,9 @@
+---
+apiVersion: anarchy.gpte.redhat.com/v1
+kind: AnarchySubject
+metadata:
+  generateName: example-
+spec:
+  governor: example
+  vars:
+    number: 42

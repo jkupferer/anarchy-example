@@ -1,0 +1,10 @@
+---
+- name: Create ConfigMap for  "{{ example_app_name }}"
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: "{{ example_app_name }}"
+      data:
+        number: "{{ number | default(0) }}"

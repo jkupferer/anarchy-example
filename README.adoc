@@ -1,0 +1,44 @@
+# Anarchy Example
+
+Install Anarchy
+
+This step installs the Anarchy custom resource definitions and cluster roles.
+
+--------------------------------------------------------------------------------
+oc process -f https://raw.githubusercontent.com/redhat-cop/anarchy/master/install-template.yaml | oc apply -f -
+--------------------------------------------------------------------------------
+
+Create an example namespace to work on the example.
+
+----
+oc new-project anarchy-example
+----
+
+Deploy Anarchy to the namespace.
+
+--------------------------------------------------------------------------------
+oc process -f https://raw.githubusercontent.com/redhat-cop/anarchy/master/deploy-template.yaml \
+-p OPERATOR_IMAGE=quay.io/redhat-cop/anarchy:v0.5.1 \
+-p RUNNER_IMAGE=quay.io/redhat-cop/anarchy-runner:v0.5.1 \
+| oc apply -f -
+--------------------------------------------------------------------------------
+
+Create the example governor.
+
+--------------------------------------------------------------------------------
+oc apply -f example-governor.yaml
+--------------------------------------------------------------------------------
+
+Create an example subject.
+
+--------------------------------------------------------------------------------
+oc create -f example-subject.yaml
+--------------------------------------------------------------------------------
+
+Get anarchy subject name.
+
+Delete example subject.
+
+--------------------------------------------------------------------------------
+oc delete anarchysubject 
+--------------------------------------------------------------------------------

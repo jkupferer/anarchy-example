@@ -1,0 +1,7 @@
+---
+- name: Destroy ConfigMap for  "{{ example_app_name }}"
+  k8s:
+    api_version: v1
+    kind: ConfigMap
+    name: "{{ example_app_name }}"
+    state: absent

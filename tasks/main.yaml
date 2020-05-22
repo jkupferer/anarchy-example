@@ -1,0 +1,12 @@
+---
+- name: Check required variables
+  assert:
+    that:
+    - example_app_name is defined
+    - example_app_name is in ['configure', 'destroy']
+    - example_action is defined
+    fail_msg: Required variables are not defined or are invalid
+
+- name: Process action
+  include_tasks:
+    file: "{{ example_app_name }}.yaml"
