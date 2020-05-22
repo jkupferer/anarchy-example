@@ -3,8 +3,8 @@
   assert:
     that:
     - example_app_name is defined
-    - example_app_name is in ['configure', 'destroy']
     - example_action is defined
+    - example_action is in ['configure', 'destroy']
     fail_msg: Required variables are not defined or are invalid
 
 - name: Process action
