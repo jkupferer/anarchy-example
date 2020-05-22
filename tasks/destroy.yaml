@@ -4,4 +4,5 @@
     api_version: v1
     kind: ConfigMap
     name: "{{ example_app_name }}"
+    namespace: "{{ example_namespace }}"
     state: absent

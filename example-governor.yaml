@@ -39,6 +39,7 @@ spec:
           name: anarchy_example
         vars:
           example_app_name: "{{ anarchy_subject_name }}"
+          example_namespace: "{{ anarchy_namespace }}"
           example_action: configure
 
     destroy:
@@ -52,6 +53,7 @@ spec:
           name: anarchy_example
         vars:
           example_app_name: "{{ anarchy_subject_name }}"
+          example_namespace: "{{ anarchy_namespace }}"
           example_action: destroy
 
       - name: Complete anarchy subject delete by removing finalizers
