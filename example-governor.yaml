@@ -7,6 +7,7 @@ spec:
     roles:
     - name: anarchy_example
       src: git+https://github.com/jkupferer/anarchy_example.git
+      version: v0.0.1
   runner: default
   subjectEventHandlers:
     create:
