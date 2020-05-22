@@ -9,4 +9,4 @@
 
 - name: Process action
   include_tasks:
-    file: "{{ example_app_name }}.yaml"
+    file: "{{ example_action }}.yaml"
