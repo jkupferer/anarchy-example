@@ -10,16 +10,14 @@ oc process -f https://raw.githubusercontent.com/redhat-cop/anarchy/master/instal
 
 Create an example namespace to work on the example.
 
-----
+------------------------------
 oc new-project anarchy-example
-----
+------------------------------
 
 Deploy Anarchy to the namespace.
 
 --------------------------------------------------------------------------------
 oc process -f https://raw.githubusercontent.com/redhat-cop/anarchy/master/deploy-template.yaml \
--p OPERATOR_IMAGE=quay.io/redhat-cop/anarchy:v0.5.1 \
--p RUNNER_IMAGE=quay.io/redhat-cop/anarchy-runner:v0.5.1 \
 | oc apply -f -
 --------------------------------------------------------------------------------
 
