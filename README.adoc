@@ -1,14 +1,19 @@
 # Anarchy Example
 
-Install Anarchy
+## Install Anarchy
 
 This step installs the Anarchy custom resource definitions and cluster roles.
+This is only needed if the Anarchy CRDs have not already been deployed.
+This is also the only step that requires cluster-admin privileges.
 
 --------------------------------------------------------------------------------
-oc process -f https://raw.githubusercontent.com/redhat-cop/anarchy/master/install-template.yaml | oc apply -f -
+oc process -f https://raw.githubusercontent.com/redhat-cop/anarchy/master/install-template.yaml \
+| oc apply -f -
 --------------------------------------------------------------------------------
 
-Create an example namespace to work on the example.
+## Deploy Anarchy
+
+Create an example namespace to work through the example.
 
 ------------------------------
 oc new-project anarchy-example
@@ -21,40 +26,91 @@ oc process -f https://raw.githubusercontent.com/redhat-cop/anarchy/master/deploy
 | oc apply -f -
 --------------------------------------------------------------------------------
 
-Create the example governor.
+This will create an `anarchy` deployment.
+Once the Anarchy pod starts, it will create a separate deployment for running ansible.
+
+Watch pods until you see both an `anarch` and `anarchy-runner-default` pod running.
+(Ctrl+C to stop watching):
+
+-------------
+oc get pod -w
+-------------
+
+## Example AnarchyGovernor and AnarchySubject
+
+Create the example AnarchyGovernor from the provided file:
 
 --------------------------------------------------------------------------------
 oc apply -f example-governor.yaml
 --------------------------------------------------------------------------------
 
-Grant access to the runner.
+The AnarchyGovernor describes how to manage AnarchySubjects by running Ansible.
+This AnarchyGovernor definition will install this repository as the role `anarchy_example` using requirements with AnsibleGalaxy.
+Take a moment to review the AnarchyGovernor definition.
+Note that it responds to AnarchySubjects creation and update by scheduling an action called `configure` and responds to delete by scheduling the action `destroy` using the action plugin `anarchy_schedule_action`.
+Both actions `configure` and `destroy` include the `anarchy_example` role.
+The `destroy` action also uses the the `anarchy_subject_delete` action plugin to tell anarchy to remove finalizers from the subject to allow the delete to complete.
+Finalizers will be automatically added to block deletion because this AnarchyGovernor declares a delete subject event handler.
+
+This example will require that the `anarchy-runner-default` service account have access to make changes to the namespace.
+By default the `anarchy-runner-default` service account has no access except through communication with the `anarchy` pod.
+
+Grant edit access to the runner.
 
 --------------------------------------------------------------------------------
 oc policy add-role-to-user edit -z anarchy-runner-default
 --------------------------------------------------------------------------------
 
+Now we are ready to create an AnarchySubject.
 Create an example subject.
 
 --------------------------------------------------------------------------------
 oc create -f example-subject.yaml
 --------------------------------------------------------------------------------
 
-Watch the anarchy runner logs.
+Watch the anarchy runner logs (Ctrl+C to stop following the logs):
 
 --------------------------------------------------------------------------------
 oc logs deployment/anarchy-runner-default -f
 --------------------------------------------------------------------------------
 
-Observe that Anarchy creates a configmap in response to the subject creation.
+This simple example has used a variable set in the AnarchySubject, `number` and used it to set a value in a corresponding ConfigMap.
+
+To investigate, get the subject name:
 
 --------------------------------------------------------------------------------
-oc get configmap
+NAME=$(oc get anarchysubjects -o jsonpath='{.items[0].metadata.name}')
 --------------------------------------------------------------------------------
 
+Then inspect the definition of the AnarchySubject:
+
+--------------------------------------------------------------------------------
+oc get anarchysubject $NAME -o yaml
+--------------------------------------------------------------------------------
+
+And ConfigMap:
+
+--------------------------------------------------------------------------------
+oc get configmap $NAME -o yaml
+--------------------------------------------------------------------------------
+
+Now let's update the AnarchySubject to update the variable `number`:
+
+--------------------------------------------------------------------------------
+oc patch anarchysubject $NAME --type=merge --patch='{"spec":{"vars":{"number":23}}}'
+--------------------------------------------------------------------------------
+
+Again, watch the anarchy runner logs (Ctrl+C to stop following the logs):
+
+--------------------------------------------------------------------------------
+oc logs deployment/anarchy-runner-default -f
+--------------------------------------------------------------------------------
+
+Now let's watch the delete function.
 Delete example subject, not waiting for completion.
 
 --------------------------------------------------------------------------------
-oc delete anarchysubject --wait=false
+oc delete anarchysubject $NAME --wait=false
 --------------------------------------------------------------------------------
 
 Watch the anarchy runner logs for delete.
@@ -66,11 +122,11 @@ oc logs deployment/anarchy-runner-default -f
 Confirm that the configmap is now gone.
 
 --------------------------------------------------------------------------------
-oc get configmap
+oc get configmap $NAME
 --------------------------------------------------------------------------------
 
 And that the AnarchySubject is also gone.
 
 --------------------------------------------------------------------------------
-oc get anarchysubject
+oc get anarchysubject $NAME
 --------------------------------------------------------------------------------
